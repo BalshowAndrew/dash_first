@@ -1,31 +1,61 @@
 # Импорты:
 from dash import Dash, html
+import dash_bootstrap_components as dbc
 
 # Создание экземпляра приложения:
-app = Dash(__name__)
+app = Dash(
+    external_stylesheets=[dbc.themes.BOOTSTRAP]
+
+)
 
 
-# Макет приложения
-app.layout = html.Div([
-    html.H1('Poverty And Equity Database',
-        style={
-            'color': 'blue',
-            'fontSize': '40px',
-            }),
-    html.H2('The World Bsnk'),
-    html.P('Key Facts'),
-    html.Ul([
-        html.Li('Number of Economies: 170'),
-        html.Li('Templral Coverage: 1974 - 2019'),
-        html.Li('Update Frequency: Quartely'),
-        html.Li('Last Updated: March 18, 2020'),
-        html.Li([
-            'Source: ',
-            html.A('https://datacatalog.worldbank.org/dataset/poverty-and-equity-database',\
-                   href='https://datacatalog.wordlbank.org/dataset/poverty-and-equity-database')
-        ])
+app.layout = html.Div(
+    [
+        dbc.Row(dbc.Col(html.Div([
+            html.H1('A single column')
+        ]))),
+        dbc.Row(
+            [
+                dbc.Col(html.Div([
+                    html.H1("One of tree columns"),
+                    html.Ul([
+                        html.Li('Number of Economies'),
+                        html.Li('Templral Coverage'),
+                        html.Li('Update Rrequency'),
+                    ])
+                ])),
+                dbc.Col(html.Div([
+                    html.H1("One of tree columns"),
+                    html.Ul([
+                        html.Li('Number of Economies'),
+                        html.Li('Templral Coverage'),
+                        html.Li('Update Rrequency'),
+                    ])
+                ])),
+                dbc.Col(html.Div([
+                    html.H1("One of tree columns"),
+                    html.Ul([
+                        html.Li('Number of Economies'),
+                        html.Li('Templral Coverage'),
+                        html.Li('Update Rrequency'),
+                    ])
+                ])),
+            ]
+        )
     ])
-])
+
+# # Макет приложения
+# app.layout = html.Div([
+#     html.H1('Poverty And Equity Database'),
+#     html.H2('The World Bsnk'),
+#     html.P('Key Facts'),
+#     html.Ul([
+#         html.Li('Number of Economies: 170'),
+#         html.Li('Templral Coverage: 1974 - 2019'),
+#         html.Li('Update Frequency: Quartely'),
+#         html.Li('Last Updated: March 18, 2020'),
+#     ])
+# ])
 
 
 # Запуск приложения
