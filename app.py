@@ -1,95 +1,65 @@
 # Импорты:
-from dash import Dash, html
+from dash import Dash, html, dcc
+from dash.dependencies import Output, Input
 import dash_bootstrap_components as dbc
+import pandas as pd
+
+
 
 # Создание экземпляра приложения:
 app = Dash(
     external_stylesheets=[dbc.themes.BOOTSTRAP]
 )
 
+poverty_data = pd.read_csv('data/PovStatsData.csv')
 
-app.layout = html.Div(
-    [
-        dbc.Row(dbc.Col(html.Div([
-            html.H1('A single column'),
-            dbc.Tabs(
-                [
-                    dbc.Tab([
-                        dbc.Row(
-                            [
-                                dbc.Col(html.Div([
-                                    html.H3('Column one of the first tab'),
-                                    html.Ul([
-                                        html.Li('First'),
-                                        html.Li('Second'),
-                                        html.Li('Third'),
-                                    ])
-                                ])),
-                                dbc.Col(html.Div([
-                                    html.H3('Column two of the first tab'),
-                                    html.Ul([
-                                        html.Li('Первый'),
-                                        html.Li('Второй'),
-                                        html.Li('Третий'),
-                                    ])
-                                ])),
-                            ]
-                        )
-                    ], label="Tab-1", tab_id="tab-1"),
-                    dbc.Tab([
-                        html.H3('Column of the second tab'),
-                        html.Ul([
-                            html.Br(),
-                            html.Li('Number of Economies'),
-                            html.Li('Temporal Coverage'),
-                            html.Li('Updte Frequency'),
-                        ])
-                    ], label="Tab-2", tab_id="tab-2"),
-                ]
-            )
-        ]))),
-        # dbc.Row(
-        #     [
-        #         dbc.Col(html.Div([
-        #             html.H1("The last of tree columns"),
-        #             html.Ul([
-        #                 html.Li('Number of Economies'),
-        #                 html.Li('Templral Coverage'),
-        #                 html.Li('Update Rrequency'),
-        #             ])
-        #         ]), width={"size": 3, "order": "last", "offset": 1}),
-        #         dbc.Col(html.Div([
-        #             html.H1("The first of tree columns"),
-        #             html.Ul([
-        #                 html.Li('Number of Economies'),
-        #                 html.Li('Templral Coverage'),
-        #                 html.Li('Update Rrequency'),
-        #             ])
-        #         ]), width={"size": 3, "order": 1, "offset": 2}),
-        #         dbc.Col(html.Div([
-        #             html.H1("The second of tree columns"),
-        #             html.Ul([
-        #                 html.Li('Number of Economies'),
-        #                 html.Li('Templral Coverage'),
-        #                 html.Li('Update Rrequency'),
-        #             ])
-        #         ]), width={"size": 3, "order": 5}),
-        #     ]
-        # )
+app.layout = html.Div([
+    html.H1('Poverty And Equity Database'),
+    html.H2('The World Bank'),
+    dcc.Dropdown(id='country',
+                 options=[{'label': country, 'value': country}
+                          for country in poverty_data['Country Name'].unique()]),
+    html.Br(),
+    html.Div(id='report'),
+    html.Br(),
+    dbc.Tabs([
+        dbc.Tab([
+            html.Ul([
+                html.Br(),
+                html.Li('Number of Economies: 170'),
+                html.Li('Temporal Coverage: 1974 - 2019'),
+                html.Li('Updata Frequency: Quarterly'),
+                html.Li('Last Updated: March 18, 2020'),
+                html.Li([
+                    'Source: ',
+                    html.A('https://datacatalog.worldbank.org/dataset/poverty-and-equity-database',
+                           href='https://datacatalog.worldbank.org/dataset/poverty-and-equity-database'),
+                ])
+            ])
+        ], label='Key Facts'),
+        dbc.Tab([
+            html.Ul([
+                html.Br(),
+                html.Li('Book title: Interactive Dashbords and Data Apps with Plotly and Dash'),
+                html.Li([
+                    'GitHub repo: ',
+                    html.A('https://github.com/PacktPublishing/Interactive-Dashboards-and-Data-Apps-with-Plotly-and-Dash',
+                           href='https://github.com/PacktPublishing/Interactive-Dashboards-and-Data-Apps-with-Plotly-and-Dash')
+                ])
+            ])
+        ], label='Project Info'),
     ])
+])
 
-# # Макет приложения
-# app.layout = html.Div([
-#     html.H1('Poverty And Equity Database'),
-#     html.H2('The World Bsnk'),
-#     html.P('Key Facts'),
-#     html.Ul([
-#         html.Li('Number of Economies: 170'),
-#         html.Li('Templral Coverage: 1974 - 2019'),
-#         html.Li('Update Frequency: Quartely'),
-#         html.Li('Last Updated: March 18, 2020'),
-#     ])
-# ])
+@app.callback(Output('report', 'children'),
+              Input('country', 'value'))
+def diaplay_country_report(country):
+    if country is None:
+        return ''
+    filtered_df = poverty_data[(poverty_data['Country Name'] == country) & (poverty_data['Indicator Name'] == 'Population, total')]
+    population = filtered_df.loc[:, '2010'].values[0]
+    return [html.H3(country),
+            f'The population of {country} in 2010 was {population:,.0f}.']
 
 
 # Запуск приложения
